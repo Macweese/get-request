@@ -4,11 +4,11 @@ on:
   push:
     branches: master
 
-name: Scrape RL Plugin Hub
+name: Scrape
 
 jobs:
   render:
-    name: Scrape RL Plugin Hub
+    name: Scrape
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v2
