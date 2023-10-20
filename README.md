@@ -1,1 +1,1 @@
-# R-RuneLite-Plugin-Data
+# R Plugin Data
