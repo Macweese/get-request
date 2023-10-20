@@ -13,4 +13,5 @@ data <- data.frame(Plugin=plugin, Authors=authors, Installs=installs, stringsAsF
 
 x <- (Sys.time() %>% force_tz("UTC") %>% {gsub(":","-",.)} %>% {sub("\\..*"," UTC",.)})
 
-write.csv(data,glue::glue('{x}','.csv'),row.names = FALSE)
+#write.csv(data,glue::glue('{x}','.csv'),row.names = FALSE)
+write.csv(data,glue::glue('data/{x}','.csv'),row.names = FALSE)
