@@ -15,17 +15,9 @@ jobs:
 
     - name: Make HTTP request and create JSON
       run: |
-          # Make the HTTP request and store response
-          RESPONSE=$(curl -s "${{ inputs.endpoint_url }}")
+          RESPONSE=$(curl https://api.runelite.net/session/count)
           
-          # Check if response is empty
-          if [ -z "$RESPONSE" ]; then
-            echo "Error: Empty response received from endpoint"
-            exit 1
-          fi
-          
-          # Create JSON file with required structure
-          cat > output.json << EOF
+          cat > sessions.json << EOF
           {
             "schemaVersion": 1,
             "label": "sessions",
@@ -33,12 +25,6 @@ jobs:
             "color": "orange"
           }
           EOF
-          
-          # Validate JSON format
-          if ! jq empty output.json; then
-            echo "Error: Invalid JSON generated"
-            exit 1
-          fi
 
     - name: Upload JSON artifact
       uses: actions/upload-artifact@v3
@@ -50,7 +36,7 @@ jobs:
     - name: Display result
       run: |
           echo "JSON file created successfully:"
-          cat output.json
+          cat sessions.json
     - name: Commit and push if changed
       run: |-
         git config user.name "Automated"
