@@ -1,0 +1,61 @@
+name: Scrape latest data
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+  - cron: '0 * * * *'
+
+jobs:
+  scheduled:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Make HTTP request and create JSON
+      run: |
+          # Make the HTTP request and store response
+          RESPONSE=$(curl -s "${{ inputs.endpoint_url }}")
+          
+          # Check if response is empty
+          if [ -z "$RESPONSE" ]; then
+            echo "Error: Empty response received from endpoint"
+            exit 1
+          fi
+          
+          # Create JSON file with required structure
+          cat > output.json << EOF
+          {
+            "schemaVersion": 1,
+            "label": "sessions",
+            "message": "$RESPONSE",
+            "color": "orange"
+          }
+          EOF
+          
+          # Validate JSON format
+          if ! jq empty output.json; then
+            echo "Error: Invalid JSON generated"
+            exit 1
+          fi
+
+    - name: Upload JSON artifact
+      uses: actions/upload-artifact@v3
+      with:
+          name: formatted-data
+          path: output.json
+          retention-days: 7
+
+    - name: Display result
+      run: |
+          echo "JSON file created successfully:"
+          cat output.json
+    - name: Commit and push if changed
+      run: |-
+        git config user.name "Automated"
+        git config user.email "actions@users.noreply.github.com"
+        git add -A
+        timestamp=$(date -u)
+        git commit -m "Sessions online ${timestmap}" || exit 0
+        git push
